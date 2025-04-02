@@ -40,16 +40,17 @@ jobs:
       - name: Run the script to download and process today’s PDF
         run: python compare.py
 
-      - name: Commit and push today’s PDF
+      - name: Push PDF to Repository
         run: |
           TODAY=$(date '+%Y-%m-%d')
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
-
-          # Ensure the new PDF is added to the repo
+      
           git add data/$TODAY.pdf
-          
-          # Commit and push changes
           git commit -m "Added gold price PDF for $TODAY" || echo "No changes to commit"
-          git branch
+      
+          # Set the remote URL with the PAT
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/aryak0512/golddigger.git
+      
+          # Push changes
           git push origin HEAD:master
