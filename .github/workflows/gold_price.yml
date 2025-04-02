@@ -27,7 +27,7 @@ jobs:
           YESTERDAY=$(date -d "yesterday" '+%Y-%m-%d')
 
           # Pull the latest files from GitHub
-          git pull origin main
+          git pull origin master
 
           # Ensure yesterday's PDF exists
           if [ -f "data/$YESTERDAY.pdf" ]; then
