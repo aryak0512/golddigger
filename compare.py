@@ -7,8 +7,8 @@ from datetime import datetime, timedelta
 warnings.filterwarnings("ignore", category=UserWarning)
 
 # Telegram Bot Token and Chat ID
-TELEGRAM_BOT_TOKEN = "xx"
-TELEGRAM_CHAT_ID = "xx"
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 # URL of the PDF
 pdf_url = "https://cem-cms-data.s3.ap-south-1.amazonaws.com/today_price_list.pdf"
