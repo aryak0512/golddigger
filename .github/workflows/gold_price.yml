@@ -2,41 +2,53 @@ name: Gold Price Scraper
 
 on:
   schedule:
-    - cron: "30 5 * * 1-5" # Runs at 11:00 AM IST (5:30 AM UTC)
-  workflow_dispatch: # Allows manual execution
+    - cron: '0 5 * * 1-5'  # Runs at 11:00 AM IST (5:30 AM UTC) Monday to Friday
+  workflow_dispatch:  # Allows manual execution
 
 jobs:
-  update_gold_price:
+  scrape:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
+          python-version: '3.x'
 
       - name: Install dependencies
-        run: pip install requests pdfplumber
+        run: pip install pdfplumber requests
 
       - name: Fetch yesterday’s PDF from GitHub
         run: |
           mkdir -p data
-          if [ -f "data/today.pdf" ]; then
-            mv data/today.pdf data/yesterday.pdf
+          YESTERDAY=$(date -d "yesterday" '+%Y-%m-%d')
+
+          # Pull the latest files from GitHub
+          git pull origin main
+
+          # Ensure yesterday's PDF exists
+          if [ -f "data/$YESTERDAY.pdf" ]; then
+            echo "Yesterday's PDF exists."
+          else
+            echo "No previous PDF found. Creating a placeholder."
+            touch "data/$YESTERDAY.pdf"
           fi
 
-      - name: Run Gold Price Script
-        run: python compare.py # Ensure your script saves the PDF as `data/today.pdf`
+      - name: Run the script to download and process today’s PDF
+        run: python your_script.py
 
-      - name: Commit and Push New PDF
+      - name: Commit and push today’s PDF
         run: |
+          TODAY=$(date '+%Y-%m-%d')
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
-          git add data/today.pdf data/yesterday.pdf
-          git commit -m "Updated gold price PDF for $(date +'%Y-%m-%d')" || echo "No changes to commit"
-          git push
+
+          # Ensure the new PDF is added to the repo
+          git add data/$TODAY.pdf
+          
+          # Commit and push changes
+          git commit -m "Added gold price PDF for $TODAY" || echo "No changes to commit"
+          git push origin main
