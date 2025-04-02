@@ -38,7 +38,7 @@ jobs:
           fi
 
       - name: Run the script to download and process today’s PDF
-        run: python your_script.py
+        run: python compare.py
 
       - name: Commit and push today’s PDF
         run: |
