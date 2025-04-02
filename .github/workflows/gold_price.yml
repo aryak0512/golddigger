@@ -2,7 +2,7 @@ name: Gold Price Scraper
 
 on:
   schedule:
-    - cron: '0 5 * * 1-5'  # Runs at 11:00 AM IST (5:30 AM UTC) Monday to Friday
+    - cron: '30 5 * * 1-5'  # Runs at 11:00 AM IST (5:30 AM UTC) Monday to Friday
   workflow_dispatch:  # Allows manual execution
 
 jobs:
@@ -45,12 +45,10 @@ jobs:
           TODAY=$(date '+%Y-%m-%d')
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
-      
+
           git add data/$TODAY.pdf
           git commit -m "Added gold price PDF for $TODAY" || echo "No changes to commit"
-      
+
           # Set the remote URL with the PAT
           git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/aryak0512/golddigger.git
-      
-          # Push changes
-          git push origin HEAD:master
+          git push origin master
