@@ -1,0 +1,69 @@
+name: Gold Price Scraper
+
+on:
+  schedule:
+    - cron: '30 5 * * 1-5'  # Runs at 11:00 AM IST (5:30 AM UTC) Monday to Friday
+  workflow_dispatch:  # Allows manual execution
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install pdfplumber requests
+
+      - name: Fetch yesterday’s PDF from GitHub
+        run: |
+          mkdir -p data
+          YESTERDAY=$(date -d "yesterday" '+%Y-%m-%d')
+
+          # Pull the latest files from GitHub
+          git pull origin master
+
+          # Ensure yesterday's PDF exists
+          if [ -f "data/$YESTERDAY.pdf" ]; then
+            echo "Yesterday's PDF exists."
+          else
+            echo "No previous PDF found. Creating a placeholder."
+            touch "data/$YESTERDAY.pdf"
+          fi
+
+      - name: Download today's PDF
+        run: |
+          TODAY=$(date '+%Y-%m-%d')
+          PDF_URL="https://example.com/goldprice/$TODAY.pdf"  # Replace with the actual URL
+          OUTPUT_FILE="data/$TODAY.pdf"
+
+          echo "Downloading today's PDF: $PDF_URL"
+
+          if curl --fail -o "$OUTPUT_FILE" "$PDF_URL"; then
+            echo "Downloaded today's PDF successfully."
+          else
+            echo "Failed to download today's PDF. Creating a placeholder."
+            touch "$OUTPUT_FILE"
+          fi
+
+      - name: Run the script to process today’s PDF
+        run: python compare.py
+
+      - name: Push PDF to Repository
+        run: |
+          TODAY=$(date '+%Y-%m-%d')
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+          git add data/$TODAY.pdf
+          git commit -m "Added gold price PDF for $TODAY" || echo "No changes to commit"
+
+          # Push changes
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT_2 }}@github.com/aryak0512/golddigger.git
+          git push origin master
