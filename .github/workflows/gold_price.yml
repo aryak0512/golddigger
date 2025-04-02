@@ -52,9 +52,6 @@ jobs:
             touch "$OUTPUT_FILE"
           fi
 
-      - name: Run the script to process today’s PDF
-        run: python compare.py
-
       - name: Push PDF to Repository
         run: |
           TODAY=$(date '+%Y-%m-%d')
@@ -67,3 +64,6 @@ jobs:
           # Push changes
           git remote set-url origin https://x-access-token:${{ secrets.GH_PAT_2 }}@github.com/aryak0512/golddigger.git
           git push origin master
+          
+      - name: Run the script to process today’s PDF
+        run: python compare.py
