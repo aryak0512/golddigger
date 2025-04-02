@@ -51,4 +51,5 @@ jobs:
           
           # Commit and push changes
           git commit -m "Added gold price PDF for $TODAY" || echo "No changes to commit"
-          git push origin main
+          git branch
+          git push origin HEAD:master
