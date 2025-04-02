@@ -50,5 +50,5 @@ jobs:
           git commit -m "Added gold price PDF for $TODAY" || echo "No changes to commit"
 
           # Set the remote URL with the PAT
-          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/aryak0512/golddigger.git
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT_2 }}@github.com/aryak0512/golddigger.git
           git push origin master
